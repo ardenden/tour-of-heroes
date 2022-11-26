@@ -175,4 +175,42 @@ describe('HeroesService (with mocks)', () => {
   })
 
   // TODO: test other HeroService methods
+  describe('#getHero', () => {
+    let expectedHero: Hero
+
+    beforeEach(() => {
+      heroService = TestBed.inject(HeroService)
+      expectedHero = { id: 1, name: 'A' }
+    })
+
+    it('should return expected hero', () => {
+      const heroId = expectedHero.id
+      heroService.getHero(heroId)
+        .subscribe({
+          next: (data) => expect(data).toEqual(expectedHero),
+          error: fail
+        })
+
+      const req = httpTestingController.expectOne(`${heroService.heroesUrl}/${heroId}`)
+      expect(req.request.method).toEqual('GET')
+
+      req.flush(expectedHero)
+    })
+  })
+
+  describe('#deleteHero', () => {
+    it('should delete a hero', () => {
+      const heroId = 1
+      heroService.deleteHero(heroId)
+        .subscribe({
+          next: (data) => expect(data).toBeNull(),
+          error: fail
+        })
+
+      const req = httpTestingController.expectOne(`${heroService.heroesUrl}/${heroId}`)
+      expect(req.request.method).toEqual('DELETE')
+
+      req.flush(null)
+    })
+  })
 })
